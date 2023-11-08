@@ -79,10 +79,10 @@ SpecterAudioProcessorEditor::SpecterAudioProcessorEditor (SpecterAudioProcessor&
     granularButton.setEnabled(true); // Enable or disable as per your needs
     addAndMakeVisible(granularButton);
     
-    loopTempoButton.setButtonText("\\");
-    loopTempoButton.addListener(this);
-    loopTempoButton.setEnabled(true); // Enable or disable as per your needs
-    addAndMakeVisible(loopTempoButton);
+    oscillatorButton.setButtonText("\\");
+    oscillatorButton.addListener(this);
+    oscillatorButton.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(oscillatorButton);
 }
 
 SpecterAudioProcessorEditor::~SpecterAudioProcessorEditor()
@@ -292,8 +292,8 @@ void SpecterAudioProcessorEditor::resized()
     filterButton.setBounds(timerHzSlider.getRight() + buttonSpacing, buttonYPosition, 20, 20);
     reverbButton.setBounds(filterButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
     granularButton.setBounds(reverbButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    loopTempoButton.setBounds(granularButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    loopButton.setBounds(loopTempoButton.getRight() + buttonSpacing, buttonYPosition, 60, 20);
+    oscillatorButton.setBounds(granularButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
+    loopButton.setBounds(oscillatorButton.getRight() + buttonSpacing, buttonYPosition, 60, 20);
 
 }
 

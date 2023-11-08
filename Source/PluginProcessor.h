@@ -12,6 +12,7 @@
 #include <atomic>
 #include "Reverb.h"
 #include "Filter.h"
+#include "Oscillate.h"
 
 
 //==============================================================================
@@ -85,13 +86,20 @@ public:
             juce::ParameterID { "filterButton", 1 },
             "Filter On/Off",
             false
-    ));
+        ));
+        
+        layout.add(std::make_unique<juce::AudioParameterBool>(
+            juce::ParameterID { "oscillatorButton", 1 },
+            "Oscillate On/Off",
+            false
+        ));
 
 
         return layout;
     }
     void randomizeReverbParameters();
     void randomizeLadderFilterParameters();
+    //SampleOscillator sampleOscillator;
     
 private:
     //==============================================================================

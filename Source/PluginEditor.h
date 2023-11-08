@@ -53,7 +53,7 @@ private:
      //std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> reverbButtonAttachment;
 
      juce::TextButton granularButton;
-     juce::TextButton loopTempoButton;
+     juce::TextButton oscillatorButton;
      bool isDragging =false;
      void computeMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight);
      void mouseDown(const juce::MouseEvent& e) override;

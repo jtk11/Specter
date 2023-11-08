@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include "Reverb.h"
 #include "Filter.h"
+//#include "Oscillate.h"
 
 //==============================================================================
 SpecterAudioProcessor::SpecterAudioProcessor()
@@ -430,7 +431,8 @@ void SpecterAudioProcessor::randomizeLadderFilterParameters()
 
     // Generate random parameters within the specified ranges
     float cutoffFrequency = random.nextFloat() * (maxCutoffFrequency - minCutoffFrequency) + minCutoffFrequency;
-    float resonance = juce::jlimit(0.0f, 1.0f, random.nextFloat() * (maxResonance - minResonance) + minResonance);
+    float resonance = 0.0f;
+    //float resonance = juce::jlimit(0.0f, 1.0f, random.nextFloat() * (maxResonance - minResonance) + minResonance);
     float drive = juce::jmax(1.0f, random.nextFloat() * (maxDrive - minDrive) + minDrive);
     juce::dsp::LadderFilter<float>::Mode mode = static_cast<juce::dsp::LadderFilter<float>::Mode>(random.nextInt(4)); // Assuming 4 modes available (0-3)
 

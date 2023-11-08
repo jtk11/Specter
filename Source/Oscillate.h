@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <numeric>
 
-class SampleOscillator {
+class SampleOscillator
+
+{
 private:
     static const int sampleRate = 44100;
     static const int snippetDuration = sampleRate / 220; // Tuned for 220Hz
