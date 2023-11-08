@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include <atomic>
 #include "Reverb.h"
+#include "Filter.h"
 
 
 //==============================================================================
@@ -69,6 +70,7 @@ public:
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
     juce::AudioProcessorValueTreeState apvts;
     ReverbEffect reverbEffect; 
+    LadderFilterEffect ladderFilterEffect;
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -78,10 +80,18 @@ public:
             "Reverb On/Off",                         // human-readable name for the parameter
             false                                    // default value
         ));
+        
+        layout.add(std::make_unique<juce::AudioParameterBool>(
+            juce::ParameterID { "filterButton", 1 },
+            "Filter On/Off",
+            false
+    ));
+
 
         return layout;
     }
     void randomizeReverbParameters();
+    void randomizeLadderFilterParameters();
     
 private:
     //==============================================================================

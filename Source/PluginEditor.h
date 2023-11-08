@@ -47,7 +47,7 @@ private:
      juce::Point<float> points[4]; // Declare an array to hold the points
      juce::Slider timerHzSlider;
      juce::TextButton stopButton;
-     juce::TextButton detuneButton;
+     juce::TextButton filterButton;
      juce::TextButton reverbButton;
      // The attachment that binds the button to the APVTS
      //std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> reverbButtonAttachment;

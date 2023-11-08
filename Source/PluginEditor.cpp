@@ -64,10 +64,10 @@ SpecterAudioProcessorEditor::SpecterAudioProcessorEditor (SpecterAudioProcessor&
     stopButton.addListener(this);
     addAndMakeVisible(stopButton);
     
-    detuneButton.setButtonText("/");
-    detuneButton.addListener(this);
-    detuneButton.setEnabled(true); // Enable or disable as per your needs
-    addAndMakeVisible(detuneButton);
+    filterButton.setButtonText("/");
+    filterButton.addListener(this);
+    filterButton.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(filterButton);
     
     reverbButton.setButtonText(")");
     reverbButton.addListener(this);
@@ -209,6 +209,14 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
         // Ensure the reverb is turned on
         audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(true);
     }
+    if (button == &filterButton)
+    {
+        // Randomize the reverb parameters every time the button is clicked
+        audioProcessor.randomizeLadderFilterParameters();
+
+        // Ensure the reverb is turned on
+        audioProcessor.apvts.getParameterAsValue("filterButton").setValue(true);
+    }
 
 }
 
@@ -281,8 +289,8 @@ void SpecterAudioProcessorEditor::resized()
     rndMixButton.setBounds(diceButton.getRight() + buttonSpacing, buttonYPosition, 60, 30);
     stopButton.setBounds(rndMixButton.getRight() + buttonSpacing, buttonYPosition, 40, 20);
     timerHzSlider.setBounds(stopButton.getRight() + buttonSpacing, buttonYPosition, 80, 20);
-    detuneButton.setBounds(timerHzSlider.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    reverbButton.setBounds(detuneButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
+    filterButton.setBounds(timerHzSlider.getRight() + buttonSpacing, buttonYPosition, 20, 20);
+    reverbButton.setBounds(filterButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
     granularButton.setBounds(reverbButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
     loopTempoButton.setBounds(granularButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
     loopButton.setBounds(loopTempoButton.getRight() + buttonSpacing, buttonYPosition, 60, 20);

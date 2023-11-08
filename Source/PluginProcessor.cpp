@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "Reverb.h"
+#include "Filter.h"
 
 //==============================================================================
 SpecterAudioProcessor::SpecterAudioProcessor()
@@ -277,19 +278,27 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         }
     }
     bool reverbEnabled = apvts.getParameterAsValue("reverbButton").getValue();
-    DBG("Reverb enabled: " << (reverbEnabled ? "Yes" : "No")); // Debug statement
-
-    if (reverbEnabled)
+    bool filterEnabled = apvts.getParameterAsValue("filterButton").getValue();
+    
+    if (filterEnabled)
     {
-        DBG("Processing Reverb"); // Debug statement
-        reverbEffect.process(buffer);
-
-        // After processing, print out the buffer's first sample from channel 0 for debugging
-        DBG("Post-Reverb Sample: " << buffer.getSample(0, 0)); // Debug statement
+        ladderFilterEffect.process(buffer);
+        
     }
     else
     {
-        DBG("Bypassing Reverb"); // Debug statement
+    }
+
+    if (reverbEnabled)
+    {
+
+        reverbEffect.process(buffer);
+
+        // After processing, print out the buffer's first sample from channel 0 for debugging
+    }
+    else
+    {
+        //DBG("Bypassing Reverb"); // Debug statement
     }
 
 }
@@ -405,3 +414,25 @@ void SpecterAudioProcessor::randomizeReverbParameters()
     // Update reverb parameters
     reverbEffect.updateParameters(roomSize, damping, wetLevel, dryLevel, width, freezeMode);
 }
+
+void SpecterAudioProcessor::randomizeLadderFilterParameters()
+{
+    // Assuming you have a Random object named 'random' in your class
+    // Define the ranges for each parameter
+    const float minCutoffFrequency = 20.0f;  // Minimum frequency in Hz
+    const float maxCutoffFrequency = 20000.0f;  // Maximum frequency in Hz
+    const float minResonance = 0.1f;
+    const float maxResonance = 4.0f;
+    const float minDrive = 0.0f;
+    const float maxDrive = 1.0f;
+
+    // Generate random parameters within the specified ranges
+    float cutoffFrequency = random.nextFloat() * (maxCutoffFrequency - minCutoffFrequency) + minCutoffFrequency;
+    float resonance = random.nextFloat() * (maxResonance - minResonance) + minResonance;
+    float drive = random.nextFloat() * (maxDrive - minDrive) + minDrive;
+    juce::dsp::LadderFilter<float>::Mode mode = static_cast<juce::dsp::LadderFilter<float>::Mode>(random.nextInt(4)); // Assuming 4 modes available (0-3)
+
+    // Update ladder filter parameters
+    ladderFilterEffect.updateParameters(cutoffFrequency, resonance, drive, mode);
+}
+
