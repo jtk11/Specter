@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include <atomic>
-#include <vector> // For std::vector
+#include "Reverb.h"
 
 
 //==============================================================================
@@ -67,7 +67,7 @@ public:
     std::atomic<float> ballPosX{0.5f}; // Default x position (0.5 for center)
     std::atomic<float> ballPosY{0.5f};
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
-
+    ReverbEffect reverbEffect; 
     
 private:
     //==============================================================================

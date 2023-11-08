@@ -126,24 +126,28 @@ bool SpecterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void SpecterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // ...
+    // Existing code...
     samplesPerBlockExpected = samplesPerBlock;
     this->currentSampleRate = sampleRate;
     // ...
 
-    // And when setting up the transport sources, use currentSampleRate:
+    // Prepare transport sources with the current sample rate
     for (int i = 0; i < 4; ++i) {
-        // ...
         transportSource[i].prepareToPlay(samplesPerBlockExpected, currentSampleRate);
-        // ...
     }
     
-    for (int i = 0; i < 4; ++i)
-    {
-        // Prepare the i-th transport source here.
-        // After preparing it, set the flag to true.
+    for (int i = 0; i < 4; ++i) {
         isTransportSourcePrepared[i] = true;
     }
+
+    // Prepare the reverb effect
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = currentSampleRate;
+    spec.maximumBlockSize = samplesPerBlockExpected;
+    spec.numChannels = getTotalNumOutputChannels();
+
+    reverbEffect.prepare(spec);
+    reverbEffect.reset();
 }
 
 void SpecterAudioProcessor::releaseResources()
