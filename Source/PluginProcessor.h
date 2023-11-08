@@ -68,6 +68,18 @@ public:
     std::atomic<float> ballPosY{0.5f};
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
     ReverbEffect reverbEffect; 
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
+    {
+        juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+        layout.add(std::make_unique<juce::AudioParameterBool>(
+            juce::ParameterID { "reverbButton", 1 }, // Here "reverbButton" is the parameter ID, 1 is the version hint
+            "Reverb On/Off",                         // human-readable name for the parameter
+            false                                    // default value
+        ));
+
+        return layout;
+    }
     
 private:
     //==============================================================================
@@ -77,12 +89,14 @@ private:
     juce::CriticalSection lock;  // To protect the shared resources during audio processing
     int samplesPerBlockExpected;
     double currentSampleRate;
+    juce::AudioProcessorValueTreeState apvts;
     std::atomic<bool> isLooping;
     std::atomic<float> topLeftLevel{0.0f};
     std::atomic<float> topRightLevel{0.0f};
     std::atomic<float> bottomLeftLevel{0.0f};
     std::atomic<float> bottomRightLevel{0.0f};
     bool isTransportSourcePrepared[4] = {false, false, false, false};
+    
     
    
     

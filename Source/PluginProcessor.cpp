@@ -12,24 +12,23 @@
 
 //==============================================================================
 SpecterAudioProcessor::SpecterAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       ),
-      isLooping(true) // Initialize isLooping to true here
+    : AudioProcessor (BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+                      .withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
+                      .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+                      ),
+      apvts(*this, nullptr, "Parameters", createParameterLayout()),
+      isLooping(true)
 {
-
+    // Constructor body remains empty as parameters are set up in the initializer list
 }
-
 SpecterAudioProcessor::~SpecterAudioProcessor() {
     
 }
+
 
 //==============================================================================
 const juce::String SpecterAudioProcessor::getName() const
