@@ -6,6 +6,7 @@
               defines="JUCE_MODAL_LOOPS_PERMITTED=1&#10;JUCE_FORCE_USE_LEGACY_PARAM_IDS">
   <MAINGROUP id="KTDUQm" name="Specter">
     <GROUP id="{A89BFE92-5196-4E9D-FF4F-20B6BD8EA4BC}" name="Source">
+      <FILE id="Klnl92" name="Oscillate.h" compile="0" resource="0" file="Source/Oscillate.h"/>
       <FILE id="WKA6iF" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="SEIeKT" name="Reverb.h" compile="0" resource="0" file="Source/Reverb.h"/>
       <FILE id="AyTxGp" name="PluginProcessor.cpp" compile="1" resource="0"
