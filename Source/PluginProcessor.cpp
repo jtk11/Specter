@@ -209,7 +209,7 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, numSamples);  // Use the stored result
-
+    
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
@@ -276,6 +276,22 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             }
         }
     }
+    bool reverbEnabled = apvts.getParameterAsValue("reverbButton").getValue();
+    DBG("Reverb enabled: " << (reverbEnabled ? "Yes" : "No")); // Debug statement
+
+    if (reverbEnabled)
+    {
+        DBG("Processing Reverb"); // Debug statement
+        reverbEffect.process(buffer);
+
+        // After processing, print out the buffer's first sample from channel 0 for debugging
+        DBG("Post-Reverb Sample: " << buffer.getSample(0, 0)); // Debug statement
+    }
+    else
+    {
+        DBG("Bypassing Reverb"); // Debug statement
+    }
+
 }
 
 
@@ -356,4 +372,36 @@ void SpecterAudioProcessor::getMixLevels(float& topLeft, float& topRight, float&
     topRight = topRightLevel.load();
     bottomLeft = bottomLeftLevel.load();
     bottomRight = bottomRightLevel.load();
+}
+
+//================
+//DSP:
+
+void SpecterAudioProcessor::randomizeReverbParameters()
+{
+    // Assuming you have a Random object named 'random' in your class
+    // Define the ranges for each parameter
+    const float minRoomSize = 0.1f;
+    const float maxRoomSize = 1.0f;
+    const float minDamping = 0.0f;
+    const float maxDamping = 1.0f;
+    const float minWetLevel = 0.0f;
+    const float maxWetLevel = 1.0f;
+    const float minDryLevel = 0.0f;
+    const float maxDryLevel = 1.0f;
+    const float minWidth = 0.0f;
+    const float maxWidth = 1.0f;
+    const float minFreezeMode = 0.0f;
+    const float maxFreezeMode = 1.0f;
+
+    // Generate random parameters within the specified ranges
+    float roomSize = random.nextFloat() * (maxRoomSize - minRoomSize) + minRoomSize;
+    float damping = random.nextFloat() * (maxDamping - minDamping) + minDamping;
+    float wetLevel = random.nextFloat() * (maxWetLevel - minWetLevel) + minWetLevel;
+    float dryLevel = random.nextFloat() * (maxDryLevel - minDryLevel) + minDryLevel;
+    float width = random.nextFloat() * (maxWidth - minWidth) + minWidth;
+    float freezeMode = random.nextFloat() * (maxFreezeMode - minFreezeMode) + minFreezeMode;
+
+    // Update reverb parameters
+    reverbEffect.updateParameters(roomSize, damping, wetLevel, dryLevel, width, freezeMode);
 }

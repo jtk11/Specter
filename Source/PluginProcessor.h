@@ -81,6 +81,7 @@ public:
 
         return layout;
     }
+    void randomizeReverbParameters();
     
 private:
     //==============================================================================
@@ -89,6 +90,7 @@ private:
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource[4];
     juce::CriticalSection lock;  // To protect the shared resources during audio processing
     int samplesPerBlockExpected;
+    juce::Random random;
     double currentSampleRate;
     std::atomic<bool> isLooping;
     std::atomic<float> topLeftLevel{0.0f};

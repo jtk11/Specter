@@ -203,6 +203,7 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     if (button == &reverbButton)
         {
+            audioProcessor.randomizeReverbParameters();
             // Toggle the state of the reverb
             bool newState = !audioProcessor.apvts.getParameterAsValue("reverbButton").getValue();
             audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(newState);
