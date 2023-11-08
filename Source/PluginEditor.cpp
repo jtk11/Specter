@@ -201,6 +201,12 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
     {
         shouldMoveBall = false; // This will stop the ball from moving
     }
+    if (button == &reverbButton)
+        {
+            // Toggle the state of the reverb
+            bool newState = !audioProcessor.apvts.getParameterAsValue("reverbButton").getValue();
+            audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(newState);
+        }
 
 }
 

@@ -18,7 +18,7 @@ class SpecterAudioProcessorEditor  :
 public juce::AudioProcessorEditor, public juce::Button::Listener, public juce::Slider::Listener, public juce::Timer
 {
 public:
-    SpecterAudioProcessorEditor (SpecterAudioProcessor&);
+    explicit SpecterAudioProcessorEditor (SpecterAudioProcessor&);
     ~SpecterAudioProcessorEditor() override;
 
     //==============================================================================
@@ -49,6 +49,9 @@ private:
      juce::TextButton stopButton;
      juce::TextButton detuneButton;
      juce::TextButton reverbButton;
+     // The attachment that binds the button to the APVTS
+     //std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> reverbButtonAttachment;
+
      juce::TextButton granularButton;
      juce::TextButton loopTempoButton;
      bool isDragging =false;

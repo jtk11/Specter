@@ -67,6 +67,7 @@ public:
     std::atomic<float> ballPosX{0.5f}; // Default x position (0.5 for center)
     std::atomic<float> ballPosY{0.5f};
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
+    juce::AudioProcessorValueTreeState apvts;
     ReverbEffect reverbEffect; 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
@@ -89,7 +90,6 @@ private:
     juce::CriticalSection lock;  // To protect the shared resources during audio processing
     int samplesPerBlockExpected;
     double currentSampleRate;
-    juce::AudioProcessorValueTreeState apvts;
     std::atomic<bool> isLooping;
     std::atomic<float> topLeftLevel{0.0f};
     std::atomic<float> topRightLevel{0.0f};
