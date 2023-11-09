@@ -148,8 +148,8 @@ void SpecterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
 
     reverbEffect.prepare(spec);
     reverbEffect.reset();
-    ladderFilterEffect.prepare(spec);
-    ladderFilterEffect.reset();
+    lowPassFilterEffect.prepare(spec);
+    lowPassFilterEffect.reset();
 }
 
 void SpecterAudioProcessor::releaseResources()
@@ -284,7 +284,7 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     
     if (filterEnabled)
     {
-        ladderFilterEffect.process(buffer);
+        lowPassFilterEffect.process(buffer);
         
     }
     else
@@ -417,24 +417,20 @@ void SpecterAudioProcessor::randomizeReverbParameters()
     reverbEffect.updateParameters(roomSize, damping, wetLevel, dryLevel, width, freezeMode);
 }
 
-void SpecterAudioProcessor::randomizeLadderFilterParameters()
+void SpecterAudioProcessor::randomizeLowPassFilterParameters()
 {
     // Assuming you have a Random object named 'random' in your class
     // Define the ranges for each parameter
     const float minCutoffFrequency = 20.0f;  // Minimum frequency in Hz
     const float maxCutoffFrequency = 20000.0f;  // Maximum frequency in Hz
-    const float minResonance = 0.1f;
-    const float maxResonance = 4.0f;
-    const float minDrive = 0.0f;
-    const float maxDrive = 1.0f;
+    const float minQualityFactor = 0.1f;  // Minimum quality factor (Q)
+    const float maxQualityFactor = 10.0f;  // Maximum quality factor (Q)
 
     // Generate random parameters within the specified ranges
     float cutoffFrequency = random.nextFloat() * (maxCutoffFrequency - minCutoffFrequency) + minCutoffFrequency;
-    float resonance = juce::jlimit(0.0f, 1.0f, random.nextFloat() * (maxResonance - minResonance) + minResonance);
-    float drive = juce::jmax(1.0f, random.nextFloat() * (maxDrive - minDrive) + minDrive);
-    juce::dsp::LadderFilter<float>::Mode mode = static_cast<juce::dsp::LadderFilter<float>::Mode>(random.nextInt(4)); // Assuming 4 modes available (0-3)
+    float qualityFactor = random.nextFloat() * (maxQualityFactor - minQualityFactor) + minQualityFactor;
 
-    // Update ladder filter parameters
-    ladderFilterEffect.updateParameters(cutoffFrequency, resonance, drive, mode);
+    // Update the low pass filter parameters
+    lowPassFilterEffect.updateParameters(cutoffFrequency, qualityFactor);
 }
 

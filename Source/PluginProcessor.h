@@ -70,7 +70,7 @@ public:
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
     juce::AudioProcessorValueTreeState apvts;
     ReverbEffect reverbEffect; 
-    LadderFilterEffect ladderFilterEffect;
+    LowPassFilterEffect lowPassFilterEffect;
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -91,7 +91,7 @@ public:
         return layout;
     }
     void randomizeReverbParameters();
-    void randomizeLadderFilterParameters();
+    void randomizeLowPassFilterParameters();
     
 private:
     //==============================================================================
