@@ -73,7 +73,7 @@ public:
     ReverbEffect reverbEffect; 
     SampleOscillator sampleOscillator;
     LowPassFilterEffect lowPassFilterEffect;
-    void processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator, float mixLevel, int totalNumInputChannels, int totalNumOutputChannels);
+    void processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator);
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;

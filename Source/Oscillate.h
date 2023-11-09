@@ -1,18 +1,40 @@
+#ifndef OSCILLATE_H  // If OSCILLATE_H is not defined
+#define OSCILLATE_H  // Define OSCILLATE_H
+
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <limits>
 
 class SampleOscillator {
 private:
     static const int sampleRate = 44100;
-    static const int snippetDuration = sampleRate / 220; // Tuned for 220Hz
-    static const int zoneDuration = sampleRate / 20; // 0.05 seconds
-    static const int overlapRatio = 68; // 68% overlap
-    static const int overlapSamples = overlapRatio * zoneDuration / 100;
-
+    int snippetDuration;
+    int zoneDuration;
+    int overlapRatio;
+    int overlapSamples;
+    void updateOverlapSamples() {
+        overlapSamples = overlapRatio * zoneDuration / 100;
+    }
     
 
 public:
+    SampleOscillator()
+    : snippetDuration(sampleRate / 220), // Initialize tuned for 220Hz
+      zoneDuration(sampleRate / 20), // Initialize for 0.05 seconds
+      overlapRatio(68) // Initialize to 68% overlap
+    {
+        updateOverlapSamples();
+    }
+
+    // Method to update snippet duration, zone duration, and overlap ratio
+    void updateParameters(int frequencyHz, double durationInSeconds, int newOverlapRatio) {
+        snippetDuration = sampleRate / frequencyHz;
+        zoneDuration = static_cast<int>(durationInSeconds * sampleRate);
+        overlapRatio = newOverlapRatio;
+        updateOverlapSamples();
+    }
+
     // Method to process and mix four buffers
     void processAndMixBuffers(const std::vector<short>& buffer1,
                               const std::vector<short>& buffer2,
@@ -70,3 +92,5 @@ public:
         return outputSamples;
     }
 };
+
+#endif  // End of OSCILLATE_H guard

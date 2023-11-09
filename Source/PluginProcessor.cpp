@@ -10,7 +10,8 @@
 #include "PluginEditor.h"
 #include "Reverb.h"
 #include "Filter.h"
-//#include "Oscillate.h"
+#include "Oscillate.h"
+#include <iostream>
 
 //==============================================================================
 SpecterAudioProcessor::SpecterAudioProcessor()
@@ -274,7 +275,7 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
             
             if (oscillatorEnabled) {
-                processOscillatorEffect(buffer, oscillator, mixLevels[i], totalNumInputChannels, totalNumOutputChannels);
+                processOscillatorEffect(tempBuffer, oscillator);
             }
 
             // Assuming isLooping is a condition that you want to check
@@ -447,24 +448,22 @@ void SpecterAudioProcessor::randomizeLowPassFilterParameters()
     lowPassFilterEffect.updateParameters(cutoffFrequency, qualityFactor);
 }
 
-void SpecterAudioProcessor::processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator, float mixLevel, int totalNumInputChannels, int totalNumOutputChannels) {
-    juce::AudioBuffer<float> tempBuffer(totalNumOutputChannels, buffer.getNumSamples());
+void SpecterAudioProcessor::processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator)
+{
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+        auto* channelData = buffer.getWritePointer(channel);
 
-    // Apply the oscillator effect
-    for (int channel = 0; channel < totalNumInputChannels; ++channel) {
-        // Convert each channel to short, process it, and convert it back
-        std::vector<short> shortBuffer = convertToShort(buffer, channel);  // Make sure you're converting the original buffer
-        DBG("Buffer before oscillation, channel " << channel << ": " << shortBuffer[0]);
+        std::vector<short> shortBuffer(buffer.getNumSamples());
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            shortBuffer[sample] = static_cast<short>(std::numeric_limits<short>::max() * channelData[sample]);
+        }
+
+        // Process the buffer with your SampleOscillator
         shortBuffer = oscillator.oscillateBuffer(shortBuffer);
-        DBG("Buffer after oscillation, channel " << channel << ": " << shortBuffer[0]);
-        convertToFloat(tempBuffer, shortBuffer, channel);  // Fill tempBuffer with the processed data
-    }
 
-    // Mix the processed temporary buffer back into the main buffer
-    for (int channel = 0; channel < totalNumOutputChannels; ++channel) {
-        // Here mixLevel will influence how much of the effect is mixed back into the buffer
-        buffer.applyGain(channel, 0, buffer.getNumSamples(), 1.0f - mixLevel);
-        buffer.addFrom(channel, 0, tempBuffer, channel, 0, buffer.getNumSamples(), mixLevel);
+        // Convert back to float and write back to the buffer
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            channelData[sample] = shortBuffer[sample] / static_cast<float>(std::numeric_limits<short>::max());
+        }
     }
 }
-
