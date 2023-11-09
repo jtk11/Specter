@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    LadderFilter.h
+    LowPassFilter.h
     Created: 8 Nov 2023 11:25:58am
     Author:  MacBook Pro
 
@@ -12,38 +12,50 @@
 
 #include <JuceHeader.h>
 
-class LadderFilterEffect
+class LowPassFilterEffect
 {
 public:
-    LadderFilterEffect() {}
-    ~LadderFilterEffect() {}
+    LowPassFilterEffect() {}
+    ~LowPassFilterEffect() {}
 
     void prepare(const juce::dsp::ProcessSpec& spec)
     {
-        ladderFilter.prepare(spec);
+        lowPassFilter.reset(new juce::dsp::IIR::Filter<float>());
+
+        auto coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate, 20000.0f);
+        lowPassFilter->coefficients = coefficients;
+
+        lowPassFilter->prepare(spec);
+
+        lastSampleRate = spec.sampleRate;
     }
+
 
     void reset()
     {
-        ladderFilter.reset();
+        lowPassFilter->reset();
     }
 
     void process(juce::AudioBuffer<float>& buffer)
     {
-        auto block = juce::dsp::AudioBlock<float>(buffer);
-        auto context = juce::dsp::ProcessContextReplacing<float>(block);
-        ladderFilter.process(context);
+        for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+        {
+            juce::dsp::AudioBlock<float> block(buffer);
+            auto singleChannelBlock = block.getSingleChannelBlock(channel);
+            juce::dsp::ProcessContextReplacing<float> context(singleChannelBlock);
+            lowPassFilter->process(context);
+        }
     }
-
-    void updateParameters(float cutoffFrequency, float resonance, float drive, juce::dsp::LadderFilter<float>::Mode mode)
+    
+    void updateParameters(float frequency, float qualityFactor)
     {
-        ladderFilter.setCutoffFrequencyHz(cutoffFrequency);
-        ladderFilter.setResonance(resonance);
-        ladderFilter.setDrive(drive);
-        ladderFilter.setMode(mode);
+        // Update the low pass filter coefficients
+        auto coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, frequency, qualityFactor);
+        lowPassFilter->coefficients = *coefficients; // Assign the new coefficients
     }
 
 private:
-    juce::dsp::LadderFilter<float> ladderFilter;
+    std::unique_ptr<juce::dsp::IIR::Filter<float>> lowPassFilter;
+    double lastSampleRate = 44100.0; // Default to standard CD sample rate
 };
 
