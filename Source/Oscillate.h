@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <numeric>
 #include <limits>
+#include <iostream>
 
 class SampleOscillator {
 private:
@@ -69,28 +70,53 @@ public:
     /// Method to oscillate a single buffer
     std::vector<short> oscillateBuffer(const std::vector<short>& buffer) {
         std::vector<short> outputSamples(buffer.size(), 0);
-        size_t snippetLength = snippetDuration;
-        size_t zoneLength = zoneDuration;
+        std::cout << "oscillateBuffer entered with buffer size: " << buffer.size() << std::endl;
+
+        size_t snippetLength = snippetDuration; // Ensure this is correctly set
+        size_t zoneLength = zoneDuration;       // Ensure this is correctly set
+
+        if (zoneLength > buffer.size()) {
+            std::cerr << "Error: zoneLength is greater than buffer size, adjusting zoneLength." << std::endl;
+            zoneLength = buffer.size();
+        }
+
+        if (zoneLength <= overlapSamples) {
+            std::cerr << "Error: overlapSamples is greater than or equal to zoneLength, adjusting overlapSamples." << std::endl;
+            overlapSamples = zoneLength / 2; // Example adjustment, you may choose a different strategy
+        }
+
+        if (zoneLength - overlapSamples > buffer.size()) {
+            std::cerr << "Adjusting overlapSamples to fit within buffer size." << std::endl;
+            overlapSamples = buffer.size() - zoneLength; // Ensure overlapSamples is less than buffer size
+        }
 
         for (size_t i = 0; i + zoneLength <= buffer.size(); i += zoneLength - overlapSamples) {
-            std::vector<short> snippet(buffer.begin() + i, buffer.begin() + i + snippetLength);
-            snippet.resize(zoneLength, 0); // Extend the snippet to fill the zone
+            std::cout << "Processing zone starting at index: " << i << std::endl;
+            std::vector<short> snippet(buffer.begin() + i, buffer.begin() + std::min(i + snippetLength, buffer.size()));
+            snippet.resize(zoneLength, 0); // Extend the snippet to fill the zone, be cautious with this line.
 
             for (size_t j = 0; j < zoneLength; ++j) {
                 if (i + j < outputSamples.size()) {
+                    float crossfadeFactor = 1.0;
                     if (j < overlapSamples && i != 0) {
-                        // Apply crossfade with overlap
-                        float crossfadeFactor = static_cast<float>(j) / overlapSamples;
-                        outputSamples[i + j] = static_cast<short>(crossfadeFactor * snippet[j] + (1 - crossfadeFactor) * outputSamples[i + j]);
-                    } else {
-                        // No overlap, just sum up
-                        outputSamples[i + j] += snippet[j];
+                        crossfadeFactor = static_cast<float>(j) / overlapSamples;
                     }
+                    short newVal = static_cast<short>(crossfadeFactor * snippet[j] + (1 - crossfadeFactor) * outputSamples[i + j]);
+                    outputSamples[i + j] = newVal;
+
+                    // Debug output
+                    std::cout << "Processing sample " << i + j << ": crossfadeFactor = " << crossfadeFactor << ", newVal = " << newVal << std::endl;
+                    std::cout << ": crossfadeFactor = " << crossfadeFactor;
+                    std::cout << ", newVal = " << newVal << std::endl;
                 }
+            std::cout << std::flush;
             }
         }
+        std::cout << "oscillateBuffer exiting." << std::endl;
+
         return outputSamples;
     }
+
 };
 
 #endif  // End of OSCILLATE_H guard

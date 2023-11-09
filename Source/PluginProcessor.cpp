@@ -453,17 +453,22 @@ void SpecterAudioProcessor::processOscillatorEffect(juce::AudioBuffer<float>& bu
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* channelData = buffer.getWritePointer(channel);
 
+        // This buffer will store the intermediate short values
         std::vector<short> shortBuffer(buffer.getNumSamples());
+        
+        // Convert float to short
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
             shortBuffer[sample] = static_cast<short>(std::numeric_limits<short>::max() * channelData[sample]);
         }
-
-        // Process the buffer with your SampleOscillator
+       
+        // Process the buffer with the SampleOscillator
         shortBuffer = oscillator.oscillateBuffer(shortBuffer);
-
+       
         // Convert back to float and write back to the buffer
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
             channelData[sample] = shortBuffer[sample] / static_cast<float>(std::numeric_limits<short>::max());
         }
+        
+    
     }
 }
