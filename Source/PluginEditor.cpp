@@ -215,6 +215,7 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
         audioProcessor.randomizeLowPassFilterParameters();
 
         audioProcessor.apvts.getParameterAsValue("filterButton").setValue(true);
+        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(false);
     }
     if (button == &oscillatorButton)
     {
