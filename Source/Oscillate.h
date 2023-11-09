@@ -2,9 +2,7 @@
 #include <algorithm>
 #include <numeric>
 
-class SampleOscillator
-
-{
+class SampleOscillator {
 private:
     static const int sampleRate = 44100;
     static const int snippetDuration = sampleRate / 220; // Tuned for 220Hz
@@ -12,12 +10,7 @@ private:
     static const int overlapRatio = 68; // 68% overlap
     static const int overlapSamples = overlapRatio * zoneDuration / 100;
 
-    // Method to oscillate a single buffer
-    std::vector<short> oscillateBuffer(const std::vector<short>& buffer) {
-        std::vector<short> outputSamples(buffer.size(), 0);
-        // ... (processing as before) ...
-        return outputSamples;
-    }
+    
 
 public:
     // Method to process and mix four buffers
@@ -50,5 +43,30 @@ public:
 
             mixBuffer[i] = mixedSample;
         }
+    }
+    /// Method to oscillate a single buffer
+    std::vector<short> oscillateBuffer(const std::vector<short>& buffer) {
+        std::vector<short> outputSamples(buffer.size(), 0);
+        size_t snippetLength = snippetDuration;
+        size_t zoneLength = zoneDuration;
+
+        for (size_t i = 0; i + zoneLength <= buffer.size(); i += zoneLength - overlapSamples) {
+            std::vector<short> snippet(buffer.begin() + i, buffer.begin() + i + snippetLength);
+            snippet.resize(zoneLength, 0); // Extend the snippet to fill the zone
+
+            for (size_t j = 0; j < zoneLength; ++j) {
+                if (i + j < outputSamples.size()) {
+                    if (j < overlapSamples && i != 0) {
+                        // Apply crossfade with overlap
+                        float crossfadeFactor = static_cast<float>(j) / overlapSamples;
+                        outputSamples[i + j] = static_cast<short>(crossfadeFactor * snippet[j] + (1 - crossfadeFactor) * outputSamples[i + j]);
+                    } else {
+                        // No overlap, just sum up
+                        outputSamples[i + j] += snippet[j];
+                    }
+                }
+            }
+        }
+        return outputSamples;
     }
 };

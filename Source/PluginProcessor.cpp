@@ -258,6 +258,10 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     // Retrieve the current mix levels (assumes these are stored in your processor)
     float mixLevels[4];
     getMixLevels(mixLevels[0], mixLevels[1], mixLevels[2], mixLevels[3]);
+    bool oscillatorEnabled = apvts.getParameterAsValue("oscillatorButton").getValue();
+
+    // Only create the SampleOscillator if we're going to use it
+    SampleOscillator oscillator;
 
     // Mix the audio from each transport source into the output buffer
     for (int i = 0; i < 4; ++i)
@@ -266,8 +270,14 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         {
             tempBuffer.clear(); // Clear the temporary buffer
             juce::AudioSourceChannelInfo info(&tempBuffer, 0, buffer.getNumSamples());
-            transportSource[i].getNextAudioBlock(info);
+            transportSource[i].getNextAudioBlock(info); // Fetch the audio block first
+
             
+            if (oscillatorEnabled) {
+                processOscillatorEffect(buffer, oscillator, mixLevels[i], totalNumInputChannels, totalNumOutputChannels);
+            }
+
+            // Assuming isLooping is a condition that you want to check
             if (isLooping && transportSource[i].hasStreamFinished()) {
                 transportSource[i].setPosition(0); // Loop back to the start
                 transportSource[i].start(); // Start playing again
@@ -280,6 +290,7 @@ void SpecterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             }
         }
     }
+ 
     bool reverbEnabled = apvts.getParameterAsValue("reverbButton").getValue();
     bool filterEnabled = apvts.getParameterAsValue("filterButton").getValue();
     
@@ -429,16 +440,31 @@ void SpecterAudioProcessor::randomizeLowPassFilterParameters()
 
     // Generate random parameters within the specified ranges
     float cutoffFrequency = random.nextFloat() * (maxCutoffFrequency - minCutoffFrequency) + minCutoffFrequency;
-<<<<<<< HEAD
-    float resonance = 0.0f;
-    //float resonance = juce::jlimit(0.0f, 1.0f, random.nextFloat() * (maxResonance - minResonance) + minResonance);
-    float drive = juce::jmax(1.0f, random.nextFloat() * (maxDrive - minDrive) + minDrive);
-    juce::dsp::LadderFilter<float>::Mode mode = static_cast<juce::dsp::LadderFilter<float>::Mode>(random.nextInt(4)); // Assuming 4 modes available (0-3)
-=======
     float qualityFactor = random.nextFloat() * (maxQualityFactor - minQualityFactor) + minQualityFactor;
->>>>>>> filter
+
 
     // Update the low pass filter parameters
     lowPassFilterEffect.updateParameters(cutoffFrequency, qualityFactor);
+}
+
+void SpecterAudioProcessor::processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator, float mixLevel, int totalNumInputChannels, int totalNumOutputChannels) {
+    juce::AudioBuffer<float> tempBuffer(totalNumOutputChannels, buffer.getNumSamples());
+
+    // Apply the oscillator effect
+    for (int channel = 0; channel < totalNumInputChannels; ++channel) {
+        // Convert each channel to short, process it, and convert it back
+        std::vector<short> shortBuffer = convertToShort(buffer, channel);  // Make sure you're converting the original buffer
+        DBG("Buffer before oscillation, channel " << channel << ": " << shortBuffer[0]);
+        shortBuffer = oscillator.oscillateBuffer(shortBuffer);
+        DBG("Buffer after oscillation, channel " << channel << ": " << shortBuffer[0]);
+        convertToFloat(tempBuffer, shortBuffer, channel);  // Fill tempBuffer with the processed data
+    }
+
+    // Mix the processed temporary buffer back into the main buffer
+    for (int channel = 0; channel < totalNumOutputChannels; ++channel) {
+        // Here mixLevel will influence how much of the effect is mixed back into the buffer
+        buffer.applyGain(channel, 0, buffer.getNumSamples(), 1.0f - mixLevel);
+        buffer.addFrom(channel, 0, tempBuffer, channel, 0, buffer.getNumSamples(), mixLevel);
+    }
 }
 

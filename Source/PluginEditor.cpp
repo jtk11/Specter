@@ -214,8 +214,13 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
         // Randomize the reverb parameters every time the button is clicked
         audioProcessor.randomizeLowPassFilterParameters();
 
-        // Ensure the reverb is turned on
         audioProcessor.apvts.getParameterAsValue("filterButton").setValue(true);
+    }
+    if (button == &oscillatorButton)
+    {
+
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(true);
     }
 
 }

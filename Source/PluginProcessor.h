@@ -71,7 +71,9 @@ public:
     void getMixLevels(float& topLeft, float& topRight, float& bottomLeft, float& bottomRight) const;
     juce::AudioProcessorValueTreeState apvts;
     ReverbEffect reverbEffect; 
+    SampleOscillator sampleOscillator;
     LowPassFilterEffect lowPassFilterEffect;
+    void processOscillatorEffect(juce::AudioBuffer<float>& buffer, SampleOscillator& oscillator, float mixLevel, int totalNumInputChannels, int totalNumOutputChannels);
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -98,13 +100,36 @@ public:
         return layout;
     }
     void randomizeReverbParameters();
-<<<<<<< HEAD
-    void randomizeLadderFilterParameters();
-    //SampleOscillator sampleOscillator;
-=======
     void randomizeLowPassFilterParameters();
->>>>>>> filter
-    
+    std::vector<short> convertToShort(const juce::AudioBuffer<float>& buffer, int channel) {
+    std::vector<short> shortBuffer(buffer.getNumSamples());
+
+        // Convert each float sample to a short, assuming the float is in the range -1.0 to 1.0
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            float sampleFloat = buffer.getReadPointer(channel)[sample];
+            // Clamp the float sample to the range [-1.0f, 1.0f]
+            sampleFloat = std::max(-1.0f, std::min(1.0f, sampleFloat));
+            // Map the range of float [-1.0, 1.0] to short [INT16_MIN, INT16_MAX]
+            shortBuffer[sample] = static_cast<short>(sampleFloat * 32767.0f);
+            if (sampleFloat < 0) {
+                shortBuffer[sample] = static_cast<short>(sampleFloat * 32768.0f);
+            }
+        }
+
+        return shortBuffer;
+        }
+
+
+    void convertToFloat(juce::AudioBuffer<float>& buffer, const std::vector<short>& shortBuffer, int channel) {
+        // Assuming the buffer size and shortBuffer size match
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            // Normalize the short value to a floating-point value in the range [-1.0, 1.0]
+            float sampleFloat = shortBuffer[sample] > 0 ?
+                shortBuffer[sample] / 32767.0f :
+                shortBuffer[sample] / 32768.0f;
+            buffer.getWritePointer(channel)[sample] = sampleFloat;
+        }
+    }
 private:
     //==============================================================================
     juce::AudioFormatManager formatManager;
