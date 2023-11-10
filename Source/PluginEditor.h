@@ -49,6 +49,10 @@ private:
      juce::TextButton stopButton;
      juce::TextButton filterButton;
      juce::TextButton reverbButton;
+     juce::TextButton secondRowButton1;
+     juce::TextButton secondRowButton2;
+     juce::TextButton secondRowButton3;
+     juce::TextButton secondRowButton4;
      // The attachment that binds the button to the APVTS
      //std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> reverbButtonAttachment;
 

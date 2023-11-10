@@ -79,10 +79,30 @@ SpecterAudioProcessorEditor::SpecterAudioProcessorEditor (SpecterAudioProcessor&
     granularButton.setEnabled(true); // Enable or disable as per your needs
     addAndMakeVisible(granularButton);
     
-    oscillatorButton.setButtonText("\\");
+    oscillatorButton.setButtonText("~");
     oscillatorButton.addListener(this);
     oscillatorButton.setEnabled(true); // Enable or disable as per your needs
     addAndMakeVisible(oscillatorButton);
+    
+    secondRowButton1.setButtonText("\\");
+    secondRowButton1.addListener(this);
+    secondRowButton1.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(secondRowButton1);
+    
+    secondRowButton2.setButtonText("(");
+    secondRowButton2.addListener(this);
+    secondRowButton2.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(secondRowButton2);
+    
+    secondRowButton3.setButtonText("*");
+    secondRowButton3.addListener(this);
+    secondRowButton3.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(secondRowButton3);
+    
+    secondRowButton4.setButtonText("-");
+    secondRowButton4.addListener(this);
+    secondRowButton4.setEnabled(true); // Enable or disable as per your needs
+    addAndMakeVisible(secondRowButton4);
 }
 
 SpecterAudioProcessorEditor::~SpecterAudioProcessorEditor()
@@ -215,13 +235,36 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
         audioProcessor.randomizeLowPassFilterParameters();
 
         audioProcessor.apvts.getParameterAsValue("filterButton").setValue(true);
-        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(false);
     }
     if (button == &oscillatorButton)
     {
 
         // Ensure the effect is turned on
         audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(true);
+    }
+    if (button == &secondRowButton1)
+    {
+
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("filterButton").setValue(false);
+    }
+    if (button == &secondRowButton2)
+    {
+
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(false);
+    }
+    if (button == &secondRowButton3)
+    {
+
+        // Ensure the effect is turned on
+        //audioProcessor.apvts.getParameterAsValue("filterButton").setValue(false);
+    }
+    if (button == &secondRowButton4)
+    {
+
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(false);
     }
 
 }
@@ -282,10 +325,8 @@ void SpecterAudioProcessorEditor::shuffleAudioFiles()
 }
 void SpecterAudioProcessorEditor::resized()
 {
-    int toolbarHeight = 50; // Height of the toolbar
-
-    // Let's space out the buttons a little bit within the toolbar
-    int buttonYPosition = 10; // This will center them vertically in the toolbar (given their height of 30)
+    int toolbarHeight = 100; // Increase if necessary to fit buttons without overlapping
+    int buttonYPosition = 10; // Move up the buttons a bit to make room for the second row
     int buttonSpacing = 10;  // Horizontal spacing between buttons
 
     folderButton.setBounds(buttonSpacing, buttonYPosition, 60, 30);
@@ -295,12 +336,21 @@ void SpecterAudioProcessorEditor::resized()
     rndMixButton.setBounds(diceButton.getRight() + buttonSpacing, buttonYPosition, 60, 30);
     stopButton.setBounds(rndMixButton.getRight() + buttonSpacing, buttonYPosition, 40, 20);
     timerHzSlider.setBounds(stopButton.getRight() + buttonSpacing, buttonYPosition, 80, 20);
-    filterButton.setBounds(timerHzSlider.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    reverbButton.setBounds(filterButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    granularButton.setBounds(reverbButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
-    oscillatorButton.setBounds(granularButton.getRight() + buttonSpacing, buttonYPosition, 20, 20);
+    int buttonYPosition2 = 3; 
+    filterButton.setBounds(timerHzSlider.getRight() + buttonSpacing, buttonYPosition2, 20, 18);
+    reverbButton.setBounds(filterButton.getRight() + buttonSpacing, buttonYPosition2, 20, 18);
+    granularButton.setBounds(reverbButton.getRight() + buttonSpacing, buttonYPosition2, 20, 18);
+    oscillatorButton.setBounds(granularButton.getRight() + buttonSpacing, buttonYPosition2, 20, 18);
     loopButton.setBounds(oscillatorButton.getRight() + buttonSpacing, buttonYPosition, 60, 20);
 
+    // This will position the second row of buttons just below the first row, with a small vertical spacing
+    int secondRowYPosition = buttonYPosition + 15; // 5 is the vertical spacing between the rows
+
+    // Set bounds for the second row of buttons, aligned under the 20x20 buttons
+    secondRowButton1.setBounds(filterButton.getX(), secondRowYPosition, 20, 18);
+    secondRowButton2.setBounds(reverbButton.getX(), secondRowYPosition, 20, 18);
+    secondRowButton3.setBounds(granularButton.getX(), secondRowYPosition, 20, 18);
+    secondRowButton4.setBounds(oscillatorButton.getX(), secondRowYPosition, 20, 18);
 }
 
 //=====
@@ -410,4 +460,3 @@ void SpecterAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
         startTimerHz(timerHzSlider.getValue());
     }
 }
-
