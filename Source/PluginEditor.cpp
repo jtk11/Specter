@@ -254,17 +254,28 @@ void SpecterAudioProcessorEditor::buttonClicked(juce::Button* button)
         // Ensure the effect is turned on
         audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(false);
     }
-    if (button == &secondRowButton3)
-    {
-
-        // Ensure the effect is turned on
-        //audioProcessor.apvts.getParameterAsValue("filterButton").setValue(false);
-    }
     if (button == &secondRowButton4)
     {
 
         // Ensure the effect is turned on
         audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(false);
+    }
+    if (button == &granularButton)
+    {
+        audioProcessor.randomizeReverbParameters();
+        audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(true);
+        audioProcessor.randomizeLowPassFilterParameters();
+        audioProcessor.apvts.getParameterAsValue("filterButton").setValue(true);
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(true);
+    }
+    if (button == &secondRowButton3)
+    {
+
+        // Ensure the effect is turned on
+        audioProcessor.apvts.getParameterAsValue("oscillatorButton").setValue(false);
+        audioProcessor.apvts.getParameterAsValue("reverbButton").setValue(false);
+        audioProcessor.apvts.getParameterAsValue("filterButton").setValue(false);
     }
 
 }
